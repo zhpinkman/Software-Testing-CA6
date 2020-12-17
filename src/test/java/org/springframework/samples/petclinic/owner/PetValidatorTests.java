@@ -1,7 +1,9 @@
 package org.springframework.samples.petclinic.owner;
 
 
+import org.junit.Assert;
 import org.junit.jupiter.api.Test;
+import org.springframework.samples.petclinic.visit.Visit;
 import org.springframework.validation.Errors;
 
 import java.time.LocalDate;
@@ -42,6 +44,7 @@ public class PetValidatorTests {
 		petValidator.validate(pet, mockError);
 		verify(mockError).rejectValue("name", REQUIRED, REQUIRED);
 		verify(mockError).rejectValue("birthDate", REQUIRED, REQUIRED);
+		verifyNoMoreInteractions(mockError);
 	}
 
 	@Test
@@ -52,16 +55,18 @@ public class PetValidatorTests {
 		petValidator.validate(pet, mockError);
 		verify(mockError).rejectValue("type", REQUIRED, REQUIRED);
 		verify(mockError).rejectValue("name", REQUIRED, REQUIRED);
+		verifyNoMoreInteractions(mockError);
 	}
 
 	@Test
 	public void validateTypeNotNew() {
 		Pet pet = new Pet();
-		pet.setId(null);
+		pet.setId(22);
 		Errors mockError = mock(Errors.class);
 		petValidator.validate(pet, mockError);
 		verify(mockError).rejectValue("name", REQUIRED, REQUIRED);
 		verify(mockError).rejectValue("birthDate", REQUIRED, REQUIRED);
+		verifyNoMoreInteractions(mockError);
 	}
 
 	@Test
@@ -73,6 +78,19 @@ public class PetValidatorTests {
 		Errors mockError = mock(Errors.class);
 		petValidator.validate(pet, mockError);
 		verifyNoInteractions(mockError);
+	}
+
+	@Test
+	public void supportsTest() {
+		Pet pet = new Pet();
+		Assert.assertEquals(petValidator.supports(Pet.class), true);
+	}
+
+	@Test
+	public void supportsTestFail() {
+		Pet pet = new Pet();
+		Assert.assertEquals(petValidator.supports(Visit.class), false);
+		Assert.assertNotNull(petValidator.supports(Pet.class));
 	}
 
 
